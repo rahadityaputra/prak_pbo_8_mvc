@@ -1,187 +1,92 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Controller;
 
-
-import Model.Dosen.DAODosen;
-import Model.Dosen.InterfaceDAODosen;
-import Model.Dosen.ModelDosen;
-import View.Dosen.*;
+import Model.Dosen.*;
+import View.*;
 import java.util.List;
 import javax.swing.JOptionPane;
-/**
- *
- * @author rahadityaputra
- */
-public class ControllerDosen {
-     View.Mahasiswa.ViewData halamanTable;
-    View.Mahasiswa.InputData halamanInput;
-    View.Mahasiswa.EditData halamanEdit;
+import Model.PersonTableModel;
 
-    InterfaceDAODosen daoDosen;
+public class ControllerDosen implements CrudController<Dosen> {
+    DAODosen dsn;
 
-    // Membuat variabel "daftarMahasiswa" untuk menyimpan data mahasiswa yg diambil dari DB.
-    List<ModelDosen> daftarDosen;
-    
-    
-    /*
-      Kalo temen-temen liat di sini, ada 3 fungsi contructor yang masing-masing memiliki
-      parameter yang berbeda. Nah, hal ini disebut dengan "function overloading",
-      yaitu sebuah fungsi yang memiliki nama sama tetapi memiliki parameter yang berbeda.
-      
-      Mengapa kita butuh "function overloading"?
-      Karena dalam hal ini, controller mahasiswa akan digunakan pada 3 halaman atau 3 view yang berbeda, 
-      yaitu Halaman Table, Halaman Input, dan Halaman Edit.
-    */
-    public ControllerDosen(View.Mahasiswa.ViewData halamanTable) {
-        this.halamanTable = halamanTable;
-        this.daoDosen = new DAODosen();
-    }
-    
-    public ControllerDosen(View.Mahasiswa.InputData halamanInput) {
-        this.halamanInput = halamanInput;
-        this.daoDosen = new DAODosen();
-    }
-    
-    public ControllerDosen(View.Mahasiswa.EditData halamanEdit) {
-        this.halamanEdit = halamanEdit;
-        this.daoDosen = new DAODosen();
+    List<Dosen> daftarDosen;
+    public ControllerDosen() {
+        this.dsn = new DAODosen();
     }
 
-    public void showAllDosen() {
-        /*
-          Mengambil daftar mahasiswa dari database, 
-          kemudian disimpan ke dalam variabel bernama list.
-         */
-        daftarDosen = daoDosen.getAll();
-
-        /* 
-          Supaya daftarMahasiswa dapat dimasukkan ke dalam tabel, kita perlu 
-          mengubah daftarMahasiswa yang memiliki tipe data List menjadi 
-          tipe data Array Object. Jika pada pertemuan kemarin kita melakukannya
-          secara manual menggunakan looping, kali ini kita tidak perlu melakukan hal tersebut,
-          karena class ModelTabel sudah otomatis mengubahnya menjadi tipe data yang sesuai.
-          
-          Caranya kita hanya perlu membuat sebuah instance dari class ModelTable,
-          kemudian kita masukkan variabel daftarMahasiswa sebagai parameter constructor
-          supaya dapat diubah menjadi sebuah isi table yang dapat dimasukkan ke dalam tabel.
-         */
-        Model.Mahasiswa.ModelTable table = new Model.Mahasiswa.ModelTable(daftarMahasiswa);
-
-        // Mengisi tabel yang berada pada halaman Table Mahasiswa
-        halamanTable.getTableMahasiswa().setModel(table);
+    @Override
+    public PersonTableModel<Dosen> getTableModel() {
+        return new PersonTableModel<Dosen>(daftarDosen);
     }
 
-    public void insertMahasiswa() {
+    @Override
+    public void showAllData() {
+        daftarDosen = dsn.getAll();
+    }
+
+
+    public void showInputData() {
+
+    }
+
+    @Override
+    public void add() {
         try {
-            // Membuat "mahasiswa baru" yang isinya masih kosong
-            ModelDosen dosenBaru = new ModelDosen();
-            
-            /*
-              Mengambil input nama dan nim menggunakan getter yang telah dibuat di view
-              Nilai dari input kemudian disimpan ke dalam variabel "nama" dan "nim".
-            */
-            String nama = halamanInput.getInputNama();
-            String nidn = halamanInput.getInputNidn();
+            InputData<Dosen> inputDataDosen = new InputData<>((nama, nidn) -> {
+                Dosen dosen = new Dosen();
+                dosen.setNama(nama);
+                dosen.setNIMorNIDN(nidn);
+                return dosen;
+            });
 
-            /*
-              Mengecek apakah input dari nama atau nim kosong/tidak.
-              Jika kosong, maka buatlah sebuah exception.
-             */
-            if ("".equals(nama) || "".equals(nidn)) {
-                throw new Exception("Nama atau NIM tidak boleh kosong!");
-            }
+
+            inputDataDosen.setOnAdd(dosen -> {
+                dsn.insert(dosen);
+                JOptionPane.showMessageDialog(null, "Mahasiswa baru berhasil ditambahkan.");
+                // halamanInput.dispose();
+                //new ViewData();
+            });
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        }
+    }
+    @Override
+    public void edit(int id, String nama, String nimOrNidn) {
+        try {
+            EditData<Dosen> editDataDosen = new EditData<>(nama, nimOrNidn,(namaBaru, nimOrNidnBaru) -> {
+                Dosen dosen = new Dosen();
+                dosen.setId(id);
+                dosen.setNama(namaBaru);
+                dosen.setNIMorNIDN(nimOrNidnBaru);
+                return dosen;
+            });
+
+            editDataDosen.setOnEdit(mahasiswa -> {
+                dsn.update(mahasiswa);
+                JOptionPane.showMessageDialog(null, "Mahasiswa baru berhasil ditambahkan.");
+            });
             
-            // Mengisi nama dan nim dari "mahasiswa baru" yang dibuat tadi.
-            dosenBaru.setNama(nama);
-            dosenBaru.setNidn(nidn);
-            
-            // Memasukkan "mahasiswa baru" ke dalam database.
-            daoDosen.insert(dosenBaru);
-            
-            // Menampilkan pop-up ketika berhasil mengedit data
-            JOptionPane.showMessageDialog(null, "Mahasiswa baru berhasil ditambahkan.");
-            
-            // Terakhir, program akan pindah ke halaman Table Mahasiswa()
-            halamanInput.dispose();
-            new View.Mahasiswa.ViewData();
+            //halamanEdit.dispose();
+            //new ViewData();
         } catch (Exception e) {
             // Menampilkan pop-up ketika terjadi error
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
         }
     }
-    
-    public void editDosen(int id) {
-        try {
-            /*
-              Membuat instance "mahasiswa yang mau diedit" buat 
-              menyimpan informasi mahasiswa yang mau diedit.
-            */
-            ModelDosen dosenYangMauDiedit = new ModelDosen();
-                        
-            /*
-              Mengambil input nama dan nim menggunakan getter yang telah dibuat di view
-              Nilai dari input kemudian disimpan ke dalam variabel "nama" dan "nim".
-            */
-            String nama = halamanEdit.getInputNama();
-            String nidn = halamanEdit.getInputNidn();
-
-            /*
-              Mengecek apakah input dari nama atau nim kosong/tidak.
-              Jika kosong, maka buatlah sebuah exception.
-             */
-            if ("".equals(nama) || "".equals(nidn)) {
-                throw new Exception("Nama atau NIM tidak boleh kosong!");
-            }
-            
-            // Mengisi id, nama dan nim dari "mahasiswa baru" yang dibuat tadi.
-            dosenYangMauDiedit.setId(id);
-            dosenYangMauDiedit.setNama(nama);
-            dosenYangMauDiedit.setNim(nim);
-            
-            // Memasukkan "mahasiswa baru" ke dalam database.
-            daoDosen.update(dosenYangMauDiedit);
-
-            // Menampilkan pop-up ketika berhasil mengedit data
-            JOptionPane.showMessageDialog(null, "Data mahasiswa berhasil diubah.");
-
-            // Terakhir, program akan pindah ke halaman Table Mahasiswa()
-            halamanEdit.dispose();
-            new View.Dosen.ViewData();
-        } catch (Exception e) {
-            // Menampilkan pop-up ketika terjadi error
-            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
-        }
-    }
-
-    public void deleteMahasiswa(Integer baris) {
-        // Mengambil id dan nama berdasarkan baris yang dipilih
-        Integer id = (int) halamanTable.getTableMahasiswa().getValueAt(baris, 0);
-        String nama = halamanTable.getTableMahasiswa().getValueAt(baris, 1).toString();
-
-        // Membuat Pop-Up untuk mengonfirmasi apakah ingin menghapus data
+    @Override
+    public void delete(int id, String nama) {
         int input = JOptionPane.showConfirmDialog(
                 null,
                 "Hapus " + nama + "?",
-                "Hapus Mahasiswa",
+                "Hapus Dosen",
                 JOptionPane.YES_NO_OPTION
         );
 
-        // Jika user memilih opsi "yes", maka hapus data.
         if (input == 0) {
-            /* 
-              Memanggil method delete() untuk menghaous data dari DB
-              berdasarkan id yang dipilih.
-            */
-            daoDosen.delete(id);
-            
-            // Menampilkan pop-up jika berhasil menghapus.
+            dsn.delete(id);
             JOptionPane.showMessageDialog(null, "Berhasil menghapus data.");
-
-            // Memanggil method "showAllMahasiswa()" untuk merefresh table.
-            showAllDosen();
+            //showAllMahasiswa();
         }
     }
 }

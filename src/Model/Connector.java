@@ -32,4 +32,24 @@ public class Connector {
         }
         return conn;
     }
+    
+    public static int executeUpdate(String query, Object ...params) throws SQLException {
+        try (PreparedStatement stmt = Connect().prepareStatement(query)) {
+            for(int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+            return stmt.executeUpdate();
+        } 
+    }
+
+
+    public static ResultSet executeQuery(String query, Object ...params) throws SQLException {
+        try (PreparedStatement stmt = Connect().prepareStatement(query)) {
+            for(int i = 0; i < params.length; i++){
+                stmt.setObject(i + 1, params[i]);
+            }
+            return stmt.executeQuery();
+        }
+    }
+
 }
