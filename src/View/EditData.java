@@ -8,8 +8,11 @@ import java.util.function.Consumer;
 
 import javax.swing.*;
 
+import Controller.CrudController;
+
 public class EditData<T extends Identitas> extends JFrame {
     Consumer<T> onEdit;
+    final CrudController<T> controller;
     JLabel header = new JLabel("Edit Mahasiswa");
     JLabel labelInputNama = new JLabel("Nama");
     JLabel labelInputNIM = new JLabel("NIM");
@@ -18,7 +21,8 @@ public class EditData<T extends Identitas> extends JFrame {
     JButton tombolEdit = new JButton("Edit Mahasiswa");
     JButton tombolKembali = new JButton("Kembali");
 
-    public EditData(String nama, String nimOrNidn, BiFunction<String, String, T> builder) {
+    public EditData(CrudController<T> controller, String nama, String nimOrNidn, BiFunction<String, String, T> builder) {
+        this.controller = controller;
         setTitle("Edit Mahasiswa");
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,7 +54,8 @@ public class EditData<T extends Identitas> extends JFrame {
         tombolKembali.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                new ViewData<>(EditData.this.controller);
+                dispose();
             }
         });
 
@@ -65,6 +70,8 @@ public class EditData<T extends Identitas> extends JFrame {
                     }
                     T data = builder.apply(nama, nimOrNidn);
                     onEdit.accept(data);
+                    new ViewData<>(EditData.this.controller);
+                    dispose();
                     
                 } catch (Exception error) {
                     System.out.print(error.getLocalizedMessage());

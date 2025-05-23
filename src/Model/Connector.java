@@ -1,12 +1,11 @@
 package Model;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 public class Connector {
-    /* 
-        Menyimpan informasi database ke dalam sebuah variabel.
-        Pada contoh ini kita menggunakan database bernama "upnvy".
-     */
     private static String jdbc_driver = "com.mysql.cj.jdbc.Driver";
     private static String nama_db = "upnvyk";
     private static String url_db = "jdbc:mysql://localhost:3306/" + nama_db;
@@ -43,12 +42,19 @@ public class Connector {
     }
 
 
-    public static ResultSet executeQuery(String query, Object ...params) throws SQLException {
+    public static <T extends Identitas> List<T> executeQuery(String query,Supplier<T> constructor) throws SQLException {
+        List<T> results = new ArrayList<>();
+
         try (PreparedStatement stmt = Connect().prepareStatement(query)) {
-            for(int i = 0; i < params.length; i++){
-                stmt.setObject(i + 1, params[i]);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                T data = constructor.get();
+                data.setId(resultSet.getInt("id"));
+                data.setNama(resultSet.getString("nama"));
+                data.setNIMorNIDN(resultSet.getString(data.getNIMorNIDNColumnName()));
+                results.add(data);
             }
-            return stmt.executeQuery();
+            return results;
         }
     }
 

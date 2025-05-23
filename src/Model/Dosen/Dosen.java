@@ -35,5 +35,15 @@ public class Dosen implements Identitas{
     public void setNIMorNIDN(String nidn) {
         this.nidn = nidn;
     }
+
+    @Override
+    public String getNIMorNIDNColumnName(){
+        return "nidn";
+    }
+
+    @Override
+    public String getIdentitasName(){
+        return "Dosen";
+    }
 }
 

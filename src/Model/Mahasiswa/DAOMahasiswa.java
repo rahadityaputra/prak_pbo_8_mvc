@@ -47,15 +47,7 @@ public class DAOMahasiswa implements GenericInterfaceDAO<Mahasiswa, Integer> {
         try {
             listMahasiswa = new ArrayList<>();
             String query = "SELECT * FROM mahasiswa;";
-            ResultSet resultSet = Connector.executeQuery(query);
-            while (resultSet.next()) {
-                Mahasiswa mhs = new Mahasiswa();
-                mhs.setId(resultSet.getInt("id"));
-                mhs.setNama(resultSet.getString("nama"));
-                mhs.setNIMorNIDN(resultSet.getString("nim"));
-                listMahasiswa.add(mhs);
-            }
-            
+            listMahasiswa = Connector.executeQuery(query, Mahasiswa::new);
         } catch (SQLException e) {
             System.out.println("Error: " + e.getLocalizedMessage());
         }

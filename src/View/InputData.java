@@ -9,9 +9,12 @@ import java.util.function.BiFunction;
 
 import javax.swing.*;
 
+import Controller.CrudController;
+
 public class InputData<T extends Identitas> extends JFrame {
     private Consumer<T> onAdd;
-    
+    private final CrudController<T> controller;
+
     JLabel header = new JLabel("Input Mahasiswa");
     JLabel labelInputNama = new JLabel("Nama");
     JLabel labelInputNIM = new JLabel("NIM");
@@ -20,7 +23,8 @@ public class InputData<T extends Identitas> extends JFrame {
     JButton tombolTambah = new JButton("Tambah Mahasiswa");
     JButton tombolKembali = new JButton("Kembali");
 
-    public InputData(BiFunction<String, String, T> builder) {
+    public InputData(CrudController<T> controller, BiFunction<String, String, T> builder) {
+        this.controller = controller;
         setTitle("Input Mahasiswa");
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,6 +51,7 @@ public class InputData<T extends Identitas> extends JFrame {
         tombolKembali.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                new ViewData<>(InputData.this.controller);
                 dispose();
             }
         });
@@ -61,6 +66,9 @@ public class InputData<T extends Identitas> extends JFrame {
                     }
                     T data = builder.apply(nama, nim);
                     onAdd.accept(data);
+                    new ViewData<>(InputData.this.controller);
+                    dispose();
+                    
                     
                 } catch (Exception error) {
                     System.out.print(error.getLocalizedMessage());

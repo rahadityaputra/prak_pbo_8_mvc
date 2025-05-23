@@ -35,5 +35,15 @@ public class Mahasiswa implements Identitas {
     public void setNIMorNIDN(String nim) {
         this.nim = nim;
     }
+
+    @Override
+    public String getNIMorNIDNColumnName(){
+        return "nim";
+    }
+
+    @Override
+    public String getIdentitasName(){
+        return "Mahasiswa";
+    }
 }
 

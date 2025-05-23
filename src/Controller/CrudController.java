@@ -8,5 +8,5 @@ public interface CrudController<T extends Identitas>{
     void add();
     void edit(int id, String nama, String nimOrNidn);
     void delete(int id, String nama);
-    void showAllData();
+    void getAllData();
 }

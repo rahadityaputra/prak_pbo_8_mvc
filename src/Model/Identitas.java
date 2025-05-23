@@ -7,4 +7,6 @@ public interface Identitas {
     public void setNama(String nama);
     public String getNIMorNIDN();
     public void setNIMorNIDN(String NIMorNPID);
+    public String getNIMorNIDNColumnName();
+    public String getIdentitasName();
 }

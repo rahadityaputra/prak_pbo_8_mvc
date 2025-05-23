@@ -46,14 +46,7 @@ public class DAODosen implements GenericInterfaceDAO<Dosen, Integer> {
         try {
             listDosen = new ArrayList<>();
             String query = "SELECT * FROM dosen;";
-            ResultSet resultSet = Connector.executeQuery(query);
-            while (resultSet.next()) {
-                Dosen dsn = new Dosen();
-                dsn.setId(resultSet.getInt("id"));
-                dsn.setNama(resultSet.getString("nama"));
-                dsn.setNIMorNIDN(resultSet.getString("nidn"));
-                listDosen.add(dsn);
-            }
+            listDosen = Connector.executeQuery(query, Dosen::new);
         } catch (SQLException e) {
             System.out.println("Error: " + e.getLocalizedMessage());
         }

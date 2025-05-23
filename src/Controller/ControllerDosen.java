@@ -16,23 +16,19 @@ public class ControllerDosen implements CrudController<Dosen> {
 
     @Override
     public PersonTableModel<Dosen> getTableModel() {
+        getAllData();
         return new PersonTableModel<Dosen>(daftarDosen);
     }
 
     @Override
-    public void showAllData() {
+    public void getAllData() {
         daftarDosen = dsn.getAll();
-    }
-
-
-    public void showInputData() {
-
     }
 
     @Override
     public void add() {
         try {
-            InputData<Dosen> inputDataDosen = new InputData<>((nama, nidn) -> {
+            InputData<Dosen> inputDataDosen = new InputData<>(this, (nama, nidn) -> {
                 Dosen dosen = new Dosen();
                 dosen.setNama(nama);
                 dosen.setNIMorNIDN(nidn);
@@ -54,7 +50,7 @@ public class ControllerDosen implements CrudController<Dosen> {
     @Override
     public void edit(int id, String nama, String nimOrNidn) {
         try {
-            EditData<Dosen> editDataDosen = new EditData<>(nama, nimOrNidn,(namaBaru, nimOrNidnBaru) -> {
+            EditData<Dosen> editDataDosen = new EditData<>(this, nama, nimOrNidn,(namaBaru, nimOrNidnBaru) -> {
                 Dosen dosen = new Dosen();
                 dosen.setId(id);
                 dosen.setNama(namaBaru);
@@ -67,10 +63,7 @@ public class ControllerDosen implements CrudController<Dosen> {
                 JOptionPane.showMessageDialog(null, "Mahasiswa baru berhasil ditambahkan.");
             });
             
-            //halamanEdit.dispose();
-            //new ViewData();
         } catch (Exception e) {
-            // Menampilkan pop-up ketika terjadi error
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
         }
     }

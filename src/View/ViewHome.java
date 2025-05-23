@@ -26,8 +26,9 @@ public class ViewHome extends JFrame {
         this.add(label);
         this.add(buttonMahasiswa);
         this.add(buttonDosen);
-        header.setBounds(100, 50, 200, 30);
-        label.setBounds(100, 100, 200, 30);
+        setVisible(true);
+        header.setBounds(100, 50, 300, 30);
+        label.setBounds(100, 100, 300, 30);
         buttonMahasiswa.setBounds(100, 150, 100, 30);
         buttonDosen.setBounds(250, 150, 100, 30);
         buttonMahasiswa.addActionListener(new ActionListener() {
@@ -43,9 +44,9 @@ public class ViewHome extends JFrame {
         buttonDosen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
                 ControllerDosen controller = new ControllerDosen();
                 new ViewData<>(controller);
+                dispose();
             }
         });
    }

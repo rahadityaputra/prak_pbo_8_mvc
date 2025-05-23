@@ -21,6 +21,7 @@ public class ViewData<T extends Identitas>extends JFrame {
     JButton tombolTambah = new JButton("Tambah Mahasiswa");
     JButton tombolEdit = new JButton("Edit Mahasiswa");
     JButton tombolHapus = new JButton("Hapus Mahasiswa");
+    JButton tombolKembali = new JButton("Kembali");
     JTable table;
     DefaultTableModel tableModel;
     JScrollPane scrollPane;
@@ -44,13 +45,14 @@ public class ViewData<T extends Identitas>extends JFrame {
         add(tombolTambah);
         add(tombolEdit);
         add(tombolHapus);
+        add(tombolKembali);
 
         header.setBounds(20, 8, 440, 24);
         scrollPane.setBounds(20, 36, 512, 320);
         tombolTambah.setBounds(20, 370, 512, 40);
         tombolEdit.setBounds(20, 414, 512, 40);
         tombolHapus.setBounds(20, 456, 512, 40);
-
+        tombolKembali.setBounds(20, 498, 512, 40);
         /*
           Memanggil method showData() dari controller untuk
           mengisi tabel dengan data yang diambil dari DB
@@ -88,7 +90,6 @@ public class ViewData<T extends Identitas>extends JFrame {
             }
         });
 
-        // Memberikan event handling ketika tombol "Hapus Mahasiswa" diklik
         tombolHapus.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,16 +98,22 @@ public class ViewData<T extends Identitas>extends JFrame {
                     String nama = table.getValueAt(baris, 1).toString();
                     controller.delete(id, nama);
                     baris = null;
+                    table.setModel(controller.getTableModel());
                 } else {
                     JOptionPane.showMessageDialog(null, "Data belum dipilih.");
                 }
             }
         });
+
+        tombolKembali.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ViewHome();
+                dispose();
+            }
+        });
     }
 
 
-    public JTable getTable() {
-        return table;
-    }
 }
 
